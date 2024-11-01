@@ -1,0 +1,16 @@
+[project]
+name = "tephra"
+version = "0.1.0"
+description = "Add a short description here"
+authors = ["Lukas Hermann <lukashermann28@gmail.com>"]
+channels = ["conda-forge", "https://conda.modular.com/max-nightly"]
+platforms = ["osx-arm64"]
+
+[tasks]
+firehose = "mojo run main.mojo"
+package = "mojo package $PIXI_PROJECT_NAME -o $CONDA_PREFIX/lib/$PIXI_PROJECT_NAME.mojopkg"
+
+[dependencies]
+max = ">=24.5.0,<24.6"
+websockets = ">=13.1,<14"
+requests = ">=2.32.3,<2.33"
