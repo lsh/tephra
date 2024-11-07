@@ -355,6 +355,11 @@ fn read_num[dtype: DType](inout r: Reader) raises -> Scalar[dtype]:
     bs = Span(buf)
     r.read_exact(bs)
     b = bitcast[dtype, 1](buf.unsafe_ptr().load[width=width]())
+
+    @parameter
+    if dtype.is_integral() and not (dtype == UInt8.type or dtype == Int8.type):
+        return byte_swap(b)
+
     return b
 
 
@@ -456,17 +461,17 @@ fn read_uint(inout r: Reader, major: Major) raises -> UInt64:
             raise Error("Number not minimal")
         return value
     elif info == 25:
-        value = byte_swap(read_num[UInt16.type](r)).cast[UInt64.type]()
+        value = read_num[UInt16.type](r).cast[UInt64.type]()
         if UInt64(0) <= value <= MAX_1BYTE:
             raise Error("Number not minimal")
         return value
     elif info == 26:
-        value = byte_swap(read_num[UInt32.type](r)).cast[UInt64.type]()
+        value = read_num[UInt32.type](r).cast[UInt64.type]()
         if UInt64(0) <= value <= MAX_2BYTE:
             raise Error("Number not minimal")
         return value
     elif info == 27:
-        value = byte_swap(read_num[UInt64.type](r)).cast[UInt64.type]()
+        value = read_num[UInt64.type](r).cast[UInt64.type]()
         if UInt64(0) <= value <= MAX_4BYTE:
             raise Error("Number not minimal")
         return value
