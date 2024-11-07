@@ -27,18 +27,14 @@ def main():
             block_bytes = b[]["blocks"].bytes()
             block_reader = Reader(block_bytes)
             cr = CarReader(block_reader)
-            blocks = List[(Cid, List[Byte])]()
+            nodes = Dict[Cid, List[Byte]]()
             while True:
                 try:
-                    blocks.append(cr.next_block())
+                    cid, bytes = cr.next_block()
+                    nodes[cid] = bytes
                 except:
                     break
 
-            nodes = Dict[Cid, Value]()
-            for block in blocks:
-                br = Reader(block[][1])
-                val = Value.decode(br)
-                nodes[block[][0]] = val
             did = b[]["repo"].string()
 
             # to get author name
@@ -54,5 +50,7 @@ def main():
                     .startswith("app.bsky.feed.post/")
                     and op[].dict()["action"].string() == "create"
                 ):
-                    record = nodes[op[].dict()["cid"].cid()]
-                    print(did, ":", record.dict()["text"])
+                    bytes = nodes[op[].dict()["cid"].cid()]
+                    br = Reader(bytes)
+                    val = Value.decode(br)
+                    print(did, ":", val.dict()["text"])
